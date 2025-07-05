@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fudel AI GPT-4</title>
+  <style>
+    body {
+      background: #f0f2f5;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      resize: none;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .response {
+      margin-top: 15px;
+      white-space: pre-wrap;
+    }
+    select {
+      margin-top: 8px;
+      width: 100%;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🤖 Fudel AI GPT-4</h2>
+    <textarea id="question" rows="3" placeholder="Tulis pertanyaan kamu..."></textarea>
+    <select id="length">
+      <option value="singkat">Jawaban Singkat</option>
+      <option value="sedang" selected>Jawaban Sedang</option>
+      <option value="panjang">Jawaban Panjang</option>
+    </select>
+    <button onclick="askAI()">Kirim Pertanyaan</button>
+    <div class="response" id="answer"></div>
+  </div>
+  <script>
+    async function askAI() {
+      const question = document.getElementById("question").value;
+      const length = document.getElementById("length").value;
+      const answerDiv = document.getElementById("answer");
+      answerDiv.innerHTML = "⏳ Menyusun jawaban...";
+
+      let style = "";
+      if (length === "singkat") style = "Jawab dengan singkat dan beri minimal 1 emoji.";
+      if (length === "sedang") style = "Jawab dengan detail sedang dan sertakan beberapa emoji.";
+      if (length === "panjang") style = "Jawab sangat detail dan informatif, tambahkan banyak emoji bila sesuai.";
+
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer API_KEY_KAMU"
+        },
+        body: JSON.stringify({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content: "Kamu adalah Fudel AI, asisten super cerdas yang menjawab seperti ChatGPT-4, selalu memakai bahasa natural dan emoji."
+            },
+            {
+              role: "user",
+              content: style + " Pertanyaan: " + question
+            }
+          ]
+        })
+      });
+      const data = await response.json();
+      answerDiv.innerHTML = data.choices[0].message.content.trim();
+    }
+  </script>
+</body>
+</html>
